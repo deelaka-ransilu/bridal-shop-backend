@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +19,6 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Employee {
 
     @Id
@@ -25,28 +26,27 @@ public class Employee {
     @Column(name = "employee_id")
     private Integer employeeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "job_title", length = 100)
+    @Column(name = "job_title", nullable = false, length = 100)
     private String jobTitle;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)  // ← Add this annotation
     @Column(name = "employment_type", nullable = false)
-    @Builder.Default
-    private EmploymentType employmentType = EmploymentType.FULL_TIME;
+    private EmploymentType employmentType;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)  // ← Add this annotation
     @Column(name = "salary_type", nullable = false)
-    @Builder.Default
-    private SalaryType salaryType = SalaryType.MONTHLY;
+    private SalaryType salaryType;
 
     @Column(name = "base_salary", nullable = false, precision = 10, scale = 2)
-    @Builder.Default
-    private BigDecimal baseSalary = BigDecimal.ZERO;
+    private BigDecimal baseSalary;
 
-    @Column(name = "hire_date")
+    @Column(name = "hire_date", nullable = false)
     @Builder.Default
     private LocalDate hireDate = LocalDate.now();
 

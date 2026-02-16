@@ -32,11 +32,12 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public endpoints - NO /api prefix needed (it's in context path)
                         .requestMatchers(
                                 "/auth/register",
                                 "/auth/login",
                                 "/auth/google",
+                                "/auth/google/callback",
                                 "/auth/verify-email",
                                 "/auth/resend-verification",
                                 "/auth/forgot-password",
@@ -47,8 +48,8 @@ public class SecurityConfig {
                         // Protected endpoints
                         .requestMatchers("/auth/complete-profile", "/auth/logout").authenticated()
                         .requestMatchers("/users/me").authenticated()
-                        .requestMatchers("/users/employees", "/users/admins", "/users/*/deactivate", "/users/*/activate")
-                        .hasRole("ADMIN")
+                        .requestMatchers("/users/employees", "/users/admins").hasRole("ADMIN")
+                        .requestMatchers("/users/*/deactivate", "/users/*/activate").hasRole("ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated()
