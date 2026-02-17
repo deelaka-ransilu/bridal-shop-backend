@@ -42,7 +42,12 @@ public class SecurityConfig {
                                 "/auth/resend-verification",
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
-                                "/auth/refresh"
+                                "/auth/refresh",
+                                "/auth/**",
+                                "/categories",
+                                "/categories/**",
+                                "/dresses",
+                                "/dresses/**"
                         ).permitAll()
 
                         // Protected endpoints
@@ -50,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/me").authenticated()
                         .requestMatchers("/users/employees", "/users/admins").hasRole("ADMIN")
                         .requestMatchers("/users/*/deactivate", "/users/*/activate").hasRole("ADMIN")
+                        .requestMatchers("/upload/**").hasRole("ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated()
