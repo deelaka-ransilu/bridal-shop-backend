@@ -134,12 +134,7 @@
 			<scope>test</scope>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>com.google.api-client</groupId>-->
-<!--			<artifactId>google-api-client</artifactId>-->
-<!--			<version>1.33.2</version>-->
-<!--		</dependency>-->
-
+		<!-- Google -->
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client</artifactId>
@@ -147,18 +142,18 @@
 			<scope>compile</scope>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>com.google.oauth-client</groupId>-->
-<!--			<artifactId>google-oauth-client</artifactId>-->
-<!--			<version>1.33.2</version>-->
-<!--		</dependency>-->
-
-		<!-- Source: https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client -->
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client</artifactId>
 			<version>1.39.0</version>
 			<scope>compile</scope>
+		</dependency>
+
+		<!-- Cloudinary -->
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.39.0</version>
 		</dependency>
 
 	</dependencies>

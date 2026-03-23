@@ -33,6 +33,9 @@ import io.jsonwebtoken.Claims;
 import edu.bridalshop.backend.dto.request.GoogleAuthRequest;
 import edu.bridalshop.backend.security.GoogleTokenVerifier;
 
+import edu.bridalshop.backend.dto.response.UserResponse;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -51,6 +54,8 @@ public class AuthService {
     private final EmailService  emailService;
 
     private final GoogleTokenVerifier googleTokenVerifier;
+
+    private final CloudinaryService cloudinaryService;
 
     @Value("${jwt.refresh-expiration}")
     private long refreshExpirationMs;
@@ -114,6 +119,12 @@ public class AuthService {
         // 3. Check password
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
             throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        // Add this after the password check — before token generation
+        if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw new InvalidCredentialsException(
+                    "Please verify your email before logging in. Check your inbox.");
         }
 
         // 4. Check account active
@@ -328,5 +339,54 @@ public class AuthService {
         String refreshToken = generateAndSaveRefreshToken(user);
 
         return buildAuthResponse(user, accessToken, refreshToken);
+    }
+
+    // ── Get current user profile ───────────────────────────────────────
+    public UserResponse getProfile(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return buildUserResponse(user);
+    }
+
+    // ── Upload profile picture ─────────────────────────────────────────
+    @Transactional
+    public UserResponse uploadProfilePicture(Integer userId,
+                                             MultipartFile file) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Validate file type
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new RuntimeException("Only image files are allowed");
+        }
+
+        // Validate file size — max 5MB
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new RuntimeException("File size must be under 5MB");
+        }
+
+        try {
+            String pictureUrl = cloudinaryService.uploadProfilePicture(
+                    file, "profile_" + user.getPublicId());
+            user.setProfilePicture(pictureUrl);
+            userRepository.save(user);
+            return buildUserResponse(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload picture: " + e.getMessage());
+        }
+    }
+
+    // ── Internal helper ────────────────────────────────────────────────
+    private UserResponse buildUserResponse(User user) {
+        return UserResponse.builder()
+                .publicId(user.getPublicId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .profilePicture(user.getProfilePicture())
+                .emailVerified(user.getEmailVerified())
+                .profileCompleted(user.getProfileCompleted())
+                .build();
     }
 }
