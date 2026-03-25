@@ -20,6 +20,8 @@ import edu.bridalshop.backend.security.JwtService;
 import edu.bridalshop.backend.util.PayloadSanitizer;
 import edu.bridalshop.backend.util.PublicIdGenerator;
 import lombok.RequiredArgsConstructor;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository             userRepository;
@@ -337,9 +340,7 @@ public class AuthService {
             return buildAuthResponse(user, accessToken, refreshToken);
 
         } catch (Exception e) {
-            // 🔥 This is the key part
-            e.printStackTrace(); // shows full error in IntelliJ console
-
+            log.error("Google login failed", e);   // logs the full stack trace with SLF4J
             throw new RuntimeException(
                     "Google login failed: " + e.getMessage(), e);
         }
