@@ -22,4 +22,8 @@ public class PublicIdGenerator {
     public String forBooking()  { return generate("bkg"); }
     public String forDress()    { return generate("drs"); }
     public String forInquiry()  { return generate("inq"); }
+    public String forCategory()    { return generate("cat"); }
+    public String forMeasurement() { return generate("msr"); }
+    public String forRental()      { return generate("rnt"); }
+    public String forImage()       { return generate("img"); }
 }
