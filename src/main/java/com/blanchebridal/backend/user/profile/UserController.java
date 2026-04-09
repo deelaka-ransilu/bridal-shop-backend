@@ -1,4 +1,4 @@
-package com.blanchebridal.backend.user;
+package com.blanchebridal.backend.user.profile;
 
 import com.blanchebridal.backend.auth.JwtUtil;
 import com.blanchebridal.backend.exception.UnauthorizedException;

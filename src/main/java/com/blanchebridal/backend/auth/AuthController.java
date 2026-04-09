@@ -29,10 +29,19 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(
-            @Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<Map<String, Object>> register
+            (
+                    @Valid @RequestBody RegisterRequest request
+            )
+    {
         AuthResponse response = authService.register(request);
-        return ResponseEntity.ok(Map.of("success", true, "data", response));
+        return ResponseEntity.ok(
+                Map.of(
+                        "success",
+                        true,
+                        "data",
+                        response)
+        );
     }
 
     @PostMapping("/login")

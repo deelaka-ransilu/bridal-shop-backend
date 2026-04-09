@@ -1,6 +1,10 @@
-package com.blanchebridal.backend.user;
+package com.blanchebridal.backend.user.profile;
 
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
+import com.blanchebridal.backend.user.measurement.CustomerMeasurement;
+import com.blanchebridal.backend.user.measurement.CustomerMeasurementRepository;
+import com.blanchebridal.backend.user.User;
+import com.blanchebridal.backend.user.UserRepository;
 import com.blanchebridal.backend.user.dto.req.MeasurementsRequest;
 import com.blanchebridal.backend.user.dto.req.UpdateProfileRequest;
 import com.blanchebridal.backend.user.dto.res.MeasurementsResponse;

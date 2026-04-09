@@ -1,4 +1,4 @@
-package com.blanchebridal.backend.user;
+package com.blanchebridal.backend.user.admin;
 
 import com.blanchebridal.backend.user.dto.req.CreateUserRequest;
 import com.blanchebridal.backend.user.dto.res.UserResponse;

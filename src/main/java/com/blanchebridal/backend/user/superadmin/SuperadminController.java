@@ -1,5 +1,6 @@
-package com.blanchebridal.backend.user;
+package com.blanchebridal.backend.user.superadmin;
 
+import com.blanchebridal.backend.user.admin.AdminService;
 import com.blanchebridal.backend.user.dto.req.CreateUserRequest;
 import com.blanchebridal.backend.user.dto.res.UserResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

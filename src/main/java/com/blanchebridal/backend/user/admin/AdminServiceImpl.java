@@ -1,7 +1,10 @@
-package com.blanchebridal.backend.user;
+package com.blanchebridal.backend.user.admin;
 
 import com.blanchebridal.backend.exception.ConflictException;
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
+import com.blanchebridal.backend.user.User;
+import com.blanchebridal.backend.user.UserRepository;
+import com.blanchebridal.backend.user.UserRole;
 import com.blanchebridal.backend.user.dto.req.CreateUserRequest;
 import com.blanchebridal.backend.user.dto.res.UserResponse;
 import lombok.RequiredArgsConstructor;

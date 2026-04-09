@@ -65,14 +65,12 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<Map<String, Object>> buildError(
             String code, String message, HttpStatus status) {
-        Map<String, Object> error = new HashMap<>();
-        error.put("code", code);
-        error.put("message", message);
-        error.put("status", status.value());
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);
-        response.put("error", error);
+        response.put("message", message);
+        response.put("error", code);
+
         return ResponseEntity.status(status).body(response);
     }
 }

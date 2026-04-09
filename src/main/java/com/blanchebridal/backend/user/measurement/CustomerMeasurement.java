@@ -1,5 +1,6 @@
-package com.blanchebridal.backend.user;
+package com.blanchebridal.backend.user.measurement;
 
+import com.blanchebridal.backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
