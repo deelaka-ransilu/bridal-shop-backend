@@ -86,6 +86,14 @@ public class ReviewServiceImpl implements ReviewService {
                 .toList();
     }
 
+    @Override
+    public List<ReviewResponse> getReviewsByStatus(ReviewStatus status) {
+        return reviewRepository.findByStatus(status)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private Review findReviewById(UUID id) {
@@ -99,15 +107,16 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
-    private ReviewResponse toResponse(Review r) {
-        String reviewerName = r.getUser().getFirstName() + " " + r.getUser().getLastName();
+    private ReviewResponse toResponse(Review review) {
         return new ReviewResponse(
-                r.getId(),
-                r.getRating(),
-                r.getComment(),
-                r.getStatus(),
-                reviewerName,
-                r.getCreatedAt()
+                review.getId(),
+                review.getRating(),
+                review.getComment(),
+                review.getStatus(),
+                review.getUser().getFirstName() + " " + review.getUser().getLastName(),
+                review.getCreatedAt(),
+                review.getProduct().getId(),
+                review.getProduct().getName()
         );
     }
 }
