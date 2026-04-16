@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
         message.setText(
                 "Welcome to Blanche Bridal!\n\n" +
                         "Please verify your email address by clicking the link below.\n" +
-                        "This link expires in 5 minutes.\n\n" +
+                        "This link expires in 20 minutes.\n\n" +
                         link + "\n\n" +
                         "If you did not create an account, you can ignore this email."
         );

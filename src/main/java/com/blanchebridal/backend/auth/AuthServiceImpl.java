@@ -206,15 +206,6 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPassword(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
 
-            // Google-only account — they have no password to reset
-            if (user.getPasswordHash() == null) {
-                emailService.sendPasswordResetEmail(email,
-                        "GOOGLE_ACCOUNT" // frontend checks for this and shows message
-                );
-                return;
-            }
-
-            // Delete old reset tokens, create new one
             tokenRepository.deleteAllByUserAndType(user, VerificationTokenType.PASSWORD_RESET);
             String tokenString = generateSecureToken();
 
@@ -222,7 +213,7 @@ public class AuthServiceImpl implements AuthService {
                     .user(user)
                     .token(tokenString)
                     .type(VerificationTokenType.PASSWORD_RESET)
-                    .expiresAt(LocalDateTime.now().plusHours(1)) // 1 hour for reset
+                    .expiresAt(LocalDateTime.now().plusHours(1))
                     .build();
 
             tokenRepository.save(resetToken);
@@ -270,7 +261,7 @@ public class AuthServiceImpl implements AuthService {
                 .user(user)
                 .token(tokenString)
                 .type(VerificationTokenType.EMAIL_VERIFY)
-                .expiresAt(LocalDateTime.now().plusMinutes(5)) // ← 5 minutes as requested
+                .expiresAt(LocalDateTime.now().plusMinutes(20)) // ← 20 minutes as requested
                 .build();
 
         tokenRepository.save(vToken);
