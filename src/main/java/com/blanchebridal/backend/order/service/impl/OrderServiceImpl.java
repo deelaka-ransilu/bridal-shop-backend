@@ -1,5 +1,6 @@
 package com.blanchebridal.backend.order.service.impl;
 
+import com.blanchebridal.backend.auth.service.EmailService;
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.order.dto.req.CreateOrderRequest;
@@ -13,13 +14,15 @@ import com.blanchebridal.backend.order.repository.OrderRepository;
 import com.blanchebridal.backend.order.service.OrderService;
 import com.blanchebridal.backend.product.entity.Product;
 import com.blanchebridal.backend.product.repository.ProductRepository;
-import com.blanchebridal.backend.user.User;
-import com.blanchebridal.backend.user.UserRepository;
+import com.blanchebridal.backend.user.entity.User;
+import com.blanchebridal.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,11 +31,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -145,7 +150,33 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + id));
         order.setStatus(newStatus);
-        return toResponse(orderRepository.save(order));
+        Order saved = orderRepository.save(order);
+
+        if (newStatus == OrderStatus.CONFIRMED) {
+            try {
+                User customer = saved.getUser();
+                if (customer != null) {
+                    List<String> itemSummaries = saved.getItems().stream()
+                            .map(item -> item.getProductName()
+                                    + " × " + item.getQuantity()
+                                    + " — LKR " + item.getUnitPrice())
+                            .collect(Collectors.toList());
+
+                    emailService.sendOrderConfirmationEmail(
+                            customer.getEmail(),
+                            customer.getFirstName() + " " + customer.getLastName(),
+                            saved.getId().toString().substring(0, 8).toUpperCase(),
+                            saved.getTotalAmount(),
+                            itemSummaries
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Failed to send order confirmation email for order {}: {}",
+                        saved.getId(), e.getMessage());
+            }
+        }
+
+        return toResponse(saved);
     }
 
     // ─── Mappers ──────────────────────────────────────────────────────────────
