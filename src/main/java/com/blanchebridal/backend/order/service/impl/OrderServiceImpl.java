@@ -17,21 +17,21 @@ import com.blanchebridal.backend.product.repository.ProductRepository;
 import com.blanchebridal.backend.user.entity.User;
 import com.blanchebridal.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
-import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -63,7 +63,6 @@ public class OrderServiceImpl implements OrderService {
                         "Insufficient stock for: " + product.getName());
             }
 
-            // Prefer rental price; fall back to purchase price
             BigDecimal unitPrice = product.getRentalPrice() != null
                     ? product.getRentalPrice()
                     : product.getPurchasePrice();
@@ -73,7 +72,6 @@ public class OrderServiceImpl implements OrderService {
                         "Product has no price set: " + product.getName());
             }
 
-            // Snapshot the first image so order history survives product edits
             String imageUrl = (product.getImages() != null && !product.getImages().isEmpty())
                     ? product.getImages().get(0).getUrl()
                     : null;
@@ -91,7 +89,6 @@ public class OrderServiceImpl implements OrderService {
             totalAmount = totalAmount.add(
                     unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity())));
 
-            // Deduct stock immediately on order creation
             product.setStock(product.getStock() - itemReq.getQuantity());
             productRepository.save(product);
         }
@@ -104,10 +101,12 @@ public class OrderServiceImpl implements OrderService {
                 .items(items)
                 .build();
 
-        // Back-reference must be set before save for CascadeType.ALL to work
         items.forEach(item -> item.setOrder(order));
 
-        return toResponse(orderRepository.save(order));
+        Order saved = orderRepository.save(order);
+        log.info("[Order] Created order {} for user {} — total LKR {}",
+                saved.getId(), userId, saved.getTotalAmount());
+        return toResponse(saved);
     }
 
     @Override
@@ -151,6 +150,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + id));
         order.setStatus(newStatus);
         Order saved = orderRepository.save(order);
+        log.info("[Order] Status updated → {} for order {}", newStatus, id);
 
         if (newStatus == OrderStatus.CONFIRMED) {
             try {
@@ -179,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
         return toResponse(saved);
     }
 
-    // ─── Mappers ──────────────────────────────────────────────────────────────
+    // ── Mappers ───────────────────────────────────────────────────────────────
 
     private OrderResponse toResponse(Order order) {
         List<OrderItemResponse> itemResponses = order.getItems() == null

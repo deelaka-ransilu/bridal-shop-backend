@@ -8,12 +8,14 @@ import com.blanchebridal.backend.inquiry.entity.InquiryStatus;
 import com.blanchebridal.backend.inquiry.repository.InquiryRepository;
 import com.blanchebridal.backend.inquiry.service.InquiryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InquiryServiceImpl implements InquiryService {
@@ -32,7 +34,10 @@ public class InquiryServiceImpl implements InquiryService {
                 .status(InquiryStatus.OPEN)
                 .build();
 
-        return toResponse(inquiryRepository.save(inquiry));
+        Inquiry saved = inquiryRepository.save(inquiry);
+        log.info("[Inquiry] New inquiry {} submitted by {} <{}>",
+                saved.getId(), saved.getName(), saved.getEmail());
+        return toResponse(saved);
     }
 
     @Override
@@ -52,10 +57,12 @@ public class InquiryServiceImpl implements InquiryService {
     public InquiryResponse updateStatus(UUID id, InquiryStatus newStatus) {
         Inquiry inquiry = findOrThrow(id);
         inquiry.setStatus(newStatus);
-        return toResponse(inquiryRepository.save(inquiry));
+        Inquiry saved = inquiryRepository.save(inquiry);
+        log.info("[Inquiry] Status updated → {} for inquiry {}", newStatus, id);
+        return toResponse(saved);
     }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
+    // ── helpers ───────────────────────────────────────────────────────────────
 
     private Inquiry findOrThrow(UUID id) {
         return inquiryRepository.findById(id)
