@@ -1,5 +1,6 @@
 package com.blanchebridal.backend.rental.service.impl;
 
+import com.blanchebridal.backend.auth.service.EmailService;
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.order.entity.Order;
@@ -13,8 +14,8 @@ import com.blanchebridal.backend.rental.entity.Rental;
 import com.blanchebridal.backend.rental.entity.RentalStatus;
 import com.blanchebridal.backend.rental.repository.RentalRepository;
 import com.blanchebridal.backend.rental.service.RentalService;
-import com.blanchebridal.backend.user.User;
-import com.blanchebridal.backend.user.UserRepository;
+import com.blanchebridal.backend.user.entity.User;
+import com.blanchebridal.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class RentalServiceImpl implements RentalService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -141,8 +143,28 @@ public class RentalServiceImpl implements RentalService {
             return;
         }
 
-        overdueRentals.forEach(r -> r.setStatus(RentalStatus.OVERDUE));
-        rentalRepository.saveAll(overdueRentals);
+        for (Rental rental : overdueRentals) {
+            rental.setStatus(RentalStatus.OVERDUE);
+            rentalRepository.save(rental);
+
+            try {
+                User customer = rental.getUser();
+                Product product = rental.getProduct();
+                if (customer != null && product != null) {
+                    emailService.sendRentalOverdueEmail(
+                            customer.getEmail(),
+                            customer.getFirstName() + " " + customer.getLastName(),
+                            product.getName(),
+                            rental.getRentalEnd(),
+                            rental.getBalanceDue()
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Failed to send overdue email for rental {}: {}",
+                        rental.getId(), e.getMessage());
+            }
+        }
+
         log.info("[RentalScheduler] Marked {} rental(s) as OVERDUE.", overdueRentals.size());
     }
 
