@@ -1,6 +1,6 @@
 package com.blanchebridal.backend.payment.controller;
 
-import com.blanchebridal.backend.auth.JwtUtil;
+import com.blanchebridal.backend.auth.security.JwtUtil;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.payment.dto.req.InitiatePaymentRequest;
 import com.blanchebridal.backend.payment.service.PaymentService;

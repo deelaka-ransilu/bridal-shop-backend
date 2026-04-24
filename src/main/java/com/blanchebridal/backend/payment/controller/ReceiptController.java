@@ -2,7 +2,7 @@ package com.blanchebridal.backend.payment.controller;
 
 import com.blanchebridal.backend.payment.dto.res.ReceiptResponse;
 import com.blanchebridal.backend.payment.service.ReceiptService;
-import com.blanchebridal.backend.user.User;
+import com.blanchebridal.backend.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

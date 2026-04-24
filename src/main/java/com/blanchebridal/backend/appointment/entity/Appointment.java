@@ -1,7 +1,7 @@
 package com.blanchebridal.backend.appointment.entity;
 
 import com.blanchebridal.backend.product.entity.Product;
-import com.blanchebridal.backend.user.User;
+import com.blanchebridal.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

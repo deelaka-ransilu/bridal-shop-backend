@@ -1,6 +1,6 @@
 package com.blanchebridal.backend.product.entity;
 
-import com.blanchebridal.backend.user.User;
+import com.blanchebridal.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

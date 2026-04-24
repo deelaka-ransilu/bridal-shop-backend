@@ -2,11 +2,12 @@ package com.blanchebridal.backend.user.admin;
 
 import com.blanchebridal.backend.exception.ConflictException;
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
-import com.blanchebridal.backend.user.User;
-import com.blanchebridal.backend.user.UserRepository;
-import com.blanchebridal.backend.user.UserRole;
+import com.blanchebridal.backend.user.entity.User;
+import com.blanchebridal.backend.user.repository.UserRepository;
+import com.blanchebridal.backend.user.entity.UserRole;
 import com.blanchebridal.backend.user.dto.req.CreateUserRequest;
 import com.blanchebridal.backend.user.dto.res.UserResponse;
+import com.blanchebridal.backend.user.service.impl.AdminServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

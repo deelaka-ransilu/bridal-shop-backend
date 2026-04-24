@@ -1,15 +1,16 @@
 package com.blanchebridal.backend.user.profile;
 
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
-import com.blanchebridal.backend.user.User;
-import com.blanchebridal.backend.user.UserRepository;
-import com.blanchebridal.backend.user.UserRole;
+import com.blanchebridal.backend.user.entity.User;
+import com.blanchebridal.backend.user.repository.UserRepository;
+import com.blanchebridal.backend.user.entity.UserRole;
 import com.blanchebridal.backend.user.dto.req.MeasurementsRequest;
 import com.blanchebridal.backend.user.dto.req.UpdateProfileRequest;
 import com.blanchebridal.backend.user.dto.res.MeasurementsResponse;
 import com.blanchebridal.backend.user.dto.res.UserResponse;
-import com.blanchebridal.backend.user.measurement.CustomerMeasurement;
-import com.blanchebridal.backend.user.measurement.CustomerMeasurementRepository;
+import com.blanchebridal.backend.user.entity.CustomerMeasurement;
+import com.blanchebridal.backend.user.repository.CustomerMeasurementRepository;
+import com.blanchebridal.backend.user.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

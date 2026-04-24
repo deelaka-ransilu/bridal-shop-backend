@@ -16,10 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.blanchebridal.backend.auth.JwtUtil;
+import com.blanchebridal.backend.auth.security.JwtUtil;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.product.dto.req.CreateReviewRequest;
-import com.blanchebridal.backend.product.dto.res.ReviewResponse;
 import com.blanchebridal.backend.product.service.ReviewService;
 
 import java.math.BigDecimal;

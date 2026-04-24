@@ -2,7 +2,7 @@ package com.blanchebridal.backend.rental.entity;
 
 import com.blanchebridal.backend.order.entity.Order;
 import com.blanchebridal.backend.product.entity.Product;
-import com.blanchebridal.backend.user.User;
+import com.blanchebridal.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

@@ -4,7 +4,7 @@ import com.blanchebridal.backend.appointment.dto.req.CreateAppointmentRequest;
 import com.blanchebridal.backend.appointment.dto.req.RescheduleAppointmentRequest;
 import com.blanchebridal.backend.appointment.entity.AppointmentStatus;
 import com.blanchebridal.backend.appointment.service.AppointmentService;
-import com.blanchebridal.backend.auth.JwtUtil;
+import com.blanchebridal.backend.auth.security.JwtUtil;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;

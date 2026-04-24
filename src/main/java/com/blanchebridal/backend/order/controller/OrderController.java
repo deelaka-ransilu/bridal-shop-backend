@@ -1,6 +1,6 @@
 package com.blanchebridal.backend.order.controller;
 
-import com.blanchebridal.backend.auth.JwtUtil;
+import com.blanchebridal.backend.auth.security.JwtUtil;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.order.dto.req.CreateOrderRequest;
 import com.blanchebridal.backend.order.dto.req.UpdateOrderStatusRequest;

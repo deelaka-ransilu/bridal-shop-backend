@@ -1,6 +1,6 @@
 package com.blanchebridal.backend.rental.controller;
 
-import com.blanchebridal.backend.auth.JwtUtil;
+import com.blanchebridal.backend.auth.security.JwtUtil;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.rental.dto.req.CreateRentalRequest;
 import com.blanchebridal.backend.rental.dto.req.MarkReturnedRequest;
