@@ -5,8 +5,6 @@ import com.blanchebridal.backend.appointment.entity.AppointmentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,4 +23,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     // Used to check if a specific slot is already taken on a date
     boolean existsByAppointmentDateAndTimeSlotAndStatusNot(
             LocalDate date, String timeSlot, AppointmentStatus status);
+
+    // Used by AppointmentScheduler to find confirmed appointments for a specific date
+    List<Appointment> findByAppointmentDateAndStatus(LocalDate date, AppointmentStatus status);
 }
