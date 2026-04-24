@@ -10,12 +10,13 @@ import com.blanchebridal.backend.appointment.repository.AppointmentRepository;
 import com.blanchebridal.backend.appointment.repository.TimeSlotConfigRepository;
 import com.blanchebridal.backend.appointment.service.AppointmentService;
 import com.blanchebridal.backend.appointment.service.GoogleCalendarService;
+import com.blanchebridal.backend.auth.service.EmailService;
 import com.blanchebridal.backend.exception.ResourceNotFoundException;
 import com.blanchebridal.backend.exception.UnauthorizedException;
 import com.blanchebridal.backend.product.entity.Product;
 import com.blanchebridal.backend.product.repository.ProductRepository;
-import com.blanchebridal.backend.user.User;
-import com.blanchebridal.backend.user.UserRepository;
+import com.blanchebridal.backend.user.entity.User;
+import com.blanchebridal.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final GoogleCalendarService googleCalendarService;
+    private final EmailService emailService;
 
     @Override
     @Transactional(readOnly = true)
@@ -108,7 +110,26 @@ public class AppointmentServiceImpl implements AppointmentService {
         String eventId = googleCalendarService.createEvent(appointment);
         appointment.setGoogleEventId(eventId);
 
-        return toResponse(appointmentRepository.save(appointment));
+        Appointment saved = appointmentRepository.save(appointment);
+
+        try {
+            User customer = saved.getUser();
+            if (customer != null) {
+                emailService.sendAppointmentConfirmationEmail(
+                        customer.getEmail(),
+                        customer.getFirstName() + " " + customer.getLastName(),
+                        saved.getAppointmentDate(),
+                        saved.getTimeSlot(),
+                        saved.getType().name(),
+                        saved.getProduct() != null ? saved.getProduct().getName() : null
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send appointment confirmation email for {}: {}",
+                    saved.getId(), e.getMessage());
+        }
+
+        return toResponse(saved);
     }
 
     @Override
