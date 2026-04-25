@@ -26,6 +26,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.blanchebridal.backend.auth.entity.VerificationToken;
+import com.blanchebridal.backend.auth.repository.VerificationTokenRepository;
+import com.blanchebridal.backend.shared.email.EmailService;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 // @ExtendWith tells JUnit to use Mockito when running this test class
@@ -58,6 +63,12 @@ class AuthServiceImplTest {
     // ── A reusable User object we build once and use in many tests ────────────
     private User testUser;
 
+    @Mock
+    private VerificationTokenRepository tokenRepository;
+
+    @Mock
+    private EmailService emailService;
+
     // @BeforeEach runs this method before EVERY single test below
     // Think of it as "reset the state before each test"
     @BeforeEach
@@ -79,33 +90,26 @@ class AuthServiceImplTest {
     // ═════════════════════════════════════════════════════════════════════════
 
     @Test
-    // @DisplayName gives the test a human-readable name shown in test results
-    @DisplayName("register: success — new email creates customer and returns token")
+    @DisplayName("register: success — new email creates customer and returns empty response")
     void register_success() {
-        // ── ARRANGE: set up what our fake objects should return ───────────────
-        // "When someone asks if this email exists, return false (it doesn't exist yet)"
         when(userRepository.existsByEmail("customer@test.com")).thenReturn(false);
-
-        // "When someone tries to encode a password, return this fake hash"
         when(passwordEncoder.encode("password123")).thenReturn("$2a$10$hashedpassword");
-
-        // "When someone tries to save any User object, return our testUser"
-        // any(User.class) means "I don't care what User is passed in, just return testUser"
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
-        // "When someone asks for a token for any user, return this fake token string"
-        when(jwtUtil.generateToken(any(User.class))).thenReturn("fake.jwt.token");
+        when(tokenRepository.save(any(VerificationToken.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // ── ACT: call the real method we are testing ──────────────────────────
+        doNothing().when(emailService)
+                .sendVerificationEmail(anyString(), anyString());
+
         RegisterRequest request = new RegisterRequest(
                 "customer@test.com", "password123", "Nimasha", "Perera", "0771234567");
+
         AuthResponse response = authService.register(request);
 
-        // ── ASSERT: check the result is what we expect ────────────────────────
-        // assertThat is from AssertJ — reads like English
         assertThat(response).isNotNull();
-        assertThat(response.token()).isEqualTo("fake.jwt.token");
-        assertThat(response.role()).isEqualTo("CUSTOMER");
+        assertThat(response.token()).isNull();
+        assertThat(response.role()).isNull();
     }
 
     @Test
@@ -204,6 +208,6 @@ class AuthServiceImplTest {
 
         assertThatThrownBy(() -> authService.login(request))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("Account is deactivated");
+                .hasMessageContaining("Please verify your email before logging in");
     }
 }

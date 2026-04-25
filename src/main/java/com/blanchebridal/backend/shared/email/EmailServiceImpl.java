@@ -26,7 +26,6 @@ public class EmailServiceImpl implements EmailService {
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy");
 
-    // ── existing methods ──────────────────────────────────────────────────────
 
     @Override
     public void sendVerificationEmail(String toEmail, String token) {
@@ -171,9 +170,6 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
     }
 
-    // ── private helpers ───────────────────────────────────────────────────────
-
-    /** Converts "RENTAL_PICKUP" → "Rental Pickup", "FITTING" → "Fitting" */
     private String formatType(String type) {
         if (type == null) return "";
         String[] parts = type.split("_");

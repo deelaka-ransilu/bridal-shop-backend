@@ -29,7 +29,6 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> register(
             @Valid @RequestBody RegisterRequest request) {
         authService.register(request);
-        // Don't return a token — user must verify email first
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Registration successful. Please check your email to verify your account."
@@ -114,7 +113,7 @@ public class AuthController {
                 .lastName(request.lastName())
                 .phone(request.phone())
                 .role(UserRole.SUPERADMIN)
-                .isActive(true) // superadmin bypasses email verification
+                .isActive(true)
                 .build();
 
         userRepository.save(user);

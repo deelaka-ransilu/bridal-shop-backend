@@ -234,8 +234,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("[Auth] Password reset successful for {}", user.getEmail());
     }
 
-    // ── private helpers ───────────────────────────────────────────────────────
-
     private String generateSecureToken() {
         byte[] bytes = new byte[32];
         new SecureRandom().nextBytes(bytes);
@@ -249,7 +247,7 @@ public class AuthServiceImpl implements AuthService {
                 .user(user)
                 .token(tokenString)
                 .type(VerificationTokenType.EMAIL_VERIFY)
-                .expiresAt(LocalDateTime.now().plusMinutes(20))
+                .expiresAt(LocalDateTime.now().plusMinutes(5))
                 .build();
 
         tokenRepository.save(vToken);
